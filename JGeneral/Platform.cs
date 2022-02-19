@@ -22,8 +22,8 @@ namespace JGeneral
                 }
             }
         }
-
-        public static string CurrentDirectory => AppDomain.CurrentDomain.BaseDirectory.Replace('\\', '/');
+        private static string _currentDir;
+        public static string CurrentDirectory => _currentDir ??= AppDomain.CurrentDomain.BaseDirectory.Replace('\\', '/');
         
     }
 }
