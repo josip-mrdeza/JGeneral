@@ -6,7 +6,6 @@ namespace JGeneral.IO.Reflection
     {
         public MethodInfo Method;
         public TParent Parent;
-        
         public Executor(string method, TParent parentInstance)
         {
             Parent = parentInstance;

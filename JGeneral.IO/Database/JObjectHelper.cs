@@ -57,7 +57,7 @@ namespace JGeneral.IO.Database
         public static T LoadAsConfig<T>(this string path)
         {
             var encoded = File.ReadAllText(path);
-            return serializer.Deserialize<T>(new JsonTextReader(new StringReader(encoded)));
+            return serializer.Deserialize<T>(new JsonTextReader(new StringReader(encoded)));    
         }
     }
 }

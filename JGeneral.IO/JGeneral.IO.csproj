@@ -35,8 +35,8 @@
         <DocumentationFile>bin\Release\JGeneral.IO.xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-          <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+        <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+          <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="System" />
@@ -61,10 +61,16 @@
         <Compile Include="FileAccessModifier.cs" />
         <Compile Include="KeepMeAlive.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Reflection\Executor.cs" />
-        <Compile Include="Reflection\Modifier.cs" />
+        <Compile Include="Reflection\Events\EventModifier.cs" />
+        <Compile Include="Reflection\Events\EventModifierHelper.cs" />
+        <Compile Include="Reflection\Events\StaticEventModifier.cs" />
+        <Compile Include="Reflection\Methods\Executor.cs" />
+        <Compile Include="Reflection\Methods\StaticExecutor.cs" />
         <Compile Include="Reflection\ProcessReflector.cs" />
-        <Compile Include="Reflection\StaticExecutor.cs" />
+        <Compile Include="Reflection\Variables\IModifier.cs" />
+        <Compile Include="Reflection\Variables\Modifier.cs" />
+        <Compile Include="Reflection\Variables\ModifierHelper.cs" />
+        <Compile Include="Reflection\Variables\StaticModifier.cs" />
         <Compile Include="Startup.cs" />
         <Compile Include="Unity\Embed.cs" />
         <Compile Include="Unity\UnityProcess.cs" />
