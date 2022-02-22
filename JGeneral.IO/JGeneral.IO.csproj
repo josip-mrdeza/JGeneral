@@ -2,6 +2,12 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
     <PropertyGroup>
+        <PackageId>JGeneral.IO</PackageId>
+        <Version>1.2.1</Version>
+        <Authors>Josip Mrdeza</Authors>
+        <PackageDescription>This library contains useful methods and classes for fiddling around with reflection and IO based things. Such as getting/setting any kind of property, adding event handlers to instance or static based events, etc.
+        </PackageDescription>
+        <RepositoryUrl>https://github.com/ForsakenNydoseth/JGeneral</RepositoryUrl>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProjectGuid>{D3EBC2E7-E7E9-46E2-9136-FA373BC89F94}</ProjectGuid>

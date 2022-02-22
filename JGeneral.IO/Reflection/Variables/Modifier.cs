@@ -56,12 +56,6 @@ namespace JGeneral.IO.Reflection
         public _MemberInfo _info { get; set; }
 
         public byte cfg { get; }
-
-        public void Modify(TVariableInfo value)
-        {
-            throw new NotImplementedException();
-        }
-
         public TVariableInfoData Get()
         {
             return cfg switch

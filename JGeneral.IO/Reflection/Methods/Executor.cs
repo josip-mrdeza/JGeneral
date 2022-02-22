@@ -58,16 +58,15 @@ namespace JGeneral.IO.Reflection
             return (TAltReturn)Method.Invoke(Parent, new object[]{arg});
         }
     }
-
-    public class Executor<TParent>
+    public class Executor<TReturn>
     {
         public MethodInfo Method;
-        public TParent Parent;
+        public object Parent;
         
-        public Executor(string method, TParent parentInstance)
+        private Executor(string method, object parentInstance)
         {
             Parent = parentInstance;
-            Method = typeof(TParent).GetMethod(method);
+            Method = parentInstance.GetType().GetMethod(method);
         }
         
         /// <summary>
@@ -75,9 +74,9 @@ namespace JGeneral.IO.Reflection
         /// Note that values might be boxed in the case that they are structs.
         /// </summary>
         /// <param name="arg">An argument array used to invoke the method with.</param>
-        public void Run(params object[] arg)
+        public TReturn Run(params object[] arg)
         {
-            Method.Invoke(Parent, arg);
+            return (TReturn)Method.Invoke(Parent, arg);
         }
         
         /// <summary>
@@ -86,9 +85,9 @@ namespace JGeneral.IO.Reflection
         /// </summary>
         /// <param name="arg">An argument of custom type TArg.</param>
         /// <typeparam name="TArg">A custom type for the input parameters of the method.</typeparam>
-        public void Run<TArg>(TArg arg)
+        public TReturn Run<TArg>(TArg arg)
         {
-            Method.Invoke(Parent, new object[]{arg});
+            return (TReturn)Method.Invoke(Parent, new object[]{arg});
         }
     }
 }
