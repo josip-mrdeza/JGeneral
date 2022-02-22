@@ -49,6 +49,10 @@ namespace JGeneral.IO.Database
             return Encoding.ASCII.GetBytes(obj.ToJson());
         }
 
+        public static T FromJsonBytes<T>(this byte[] arr)
+        {
+            return (serializer.Deserialize<T>(new JsonTextReader(new StringReader(Encoding.ASCII.GetString(arr)))));
+        }
         public static void SaveAsConfig<T>(this T obj, string path) where T : notnull
         {
             File.WriteAllText(path, obj.ToJson());

@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CJGT", "CJGT\CJGT.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.Unity", "JGeneral.Unity\JGeneral.Unity.csproj", "{5CEAAF1F-8E1D-48E1-96B9-EC41F25F24D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.Conveyor", "JGeneral.Conveyor\JGeneral.Conveyor.csproj", "{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{5CEAAF1F-8E1D-48E1-96B9-EC41F25F24D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CEAAF1F-8E1D-48E1-96B9-EC41F25F24D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CEAAF1F-8E1D-48E1-96B9-EC41F25F24D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
