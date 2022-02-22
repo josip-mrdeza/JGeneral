@@ -7,8 +7,5 @@ namespace JGeneral.Conveyor
     public interface IConveyor
     {
         public string Name { get; set; }
-        public ConveyorObject Data { get; set; }
-        public Task Transmit();
-        public Task Receive();
     }
 }

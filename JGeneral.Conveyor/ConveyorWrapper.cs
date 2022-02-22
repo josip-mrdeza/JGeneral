@@ -19,8 +19,7 @@ namespace JGeneral.Conveyor
             server = new ConveyorReceiver(serverId);
             client = new ConveyorSender(remoteId);
             server.Connected += () => OnServerConnect?.Invoke();
-            server.OnReceivedJson += json => OnServerReceivedJson?.Invoke(json);
-            server.OnReceivedConveyorObject += co => OnServerReceivedConveyorObject?.Invoke(co);
+            server.OnReceived += json => OnServerReceived?.Invoke(new ConveyorObject(json));
             client.OnFinishedSending += () => OnClientFinishedSending?.Invoke();
             ServerThread = Task.Run(async () =>
             {
@@ -29,7 +28,7 @@ namespace JGeneral.Conveyor
                     try
                     {
                         await server.WaitForConnection();
-                        await server.ReceiveConveyorObject();
+                        await server.Receive();
                     }
                     catch
                     {
@@ -39,38 +38,18 @@ namespace JGeneral.Conveyor
             });
         }
 
-        public void ConnectToServer()
+        public void Connect()
         {
             client.Connect();
+            OnClientConnect?.Invoke();
         }
-
-        private async Task WaitForConnection()
-        {
-            await server.WaitForConnection();
-        }
-
-        private async Task Receive()
-        {
-            var json = await server._jsonStream.ReadJsonAsync();
-            server.Data = (json).FromJsonText<ConveyorObject>();
-        }
-        
-        private async Task<ConveyorObject> ReceiveConveyorObject()
-        {
-            var received =  (await server._jsonStream.ReadJsonAsync()).FromJsonText<ConveyorObject>();
-            server.Data = received;
-            return received;
-        }
-        
         public async Task Transmit(object jsonObject)
         {
             await client.Transmit(jsonObject);
         }
-        
-        
         public event Action OnServerConnect;
-        public event Action<string> OnServerReceivedJson;
-        public event Action<ConveyorObject> OnServerReceivedConveyorObject;
+        public event Action OnClientConnect;
+        public event Action<ConveyorObject> OnServerReceived;
         public event Action OnClientFinishedSending;
     }
 }
