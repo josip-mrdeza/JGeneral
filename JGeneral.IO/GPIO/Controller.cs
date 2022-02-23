@@ -26,7 +26,11 @@ namespace JGeneral.IO.GPIO
         {
             return new Controller(gpioPin, PinMode.Input);
         }
-        
+
+        public void Dispose()
+        {
+            _controller.Dispose();
+        }
         public bool Write(bool signal)
         {
             if (_controller.GetPinMode(_gpioPin) == PinMode.Input)
