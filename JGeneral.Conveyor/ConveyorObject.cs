@@ -13,4 +13,21 @@ namespace JGeneral.Conveyor
             Data = data;
         }
     }
+    
+    public class ConveyorObject<T>
+    {
+        public Guid Id;
+        public T Data;
+
+        public ConveyorObject(T data)
+        {
+            Id = Guid.NewGuid();
+            Data = data;
+        }
+
+        public static implicit operator ConveyorObject(ConveyorObject<T> genericConveyorObject)
+        {
+            return new (genericConveyorObject.Data);
+        }
+    }
 }

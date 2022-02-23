@@ -14,12 +14,13 @@ namespace JGeneral.Conveyor
         protected ConveyorReceiver server;
         protected ConveyorSender client;
         public Task ServerThread;
+        
         public ConveyorWrapper(string serverId, string remoteId)
         {
             server = new ConveyorReceiver(serverId);
             client = new ConveyorSender(remoteId);
             server.Connected += () => OnServerConnect?.Invoke();
-            server.OnReceived += json => OnServerReceived?.Invoke(new ConveyorObject(json));
+            server.OnReceived += json => OnServerReceived?.Invoke(json);
             client.OnFinishedSending += () => OnClientFinishedSending?.Invoke();
             ServerThread = Task.Run(async () =>
             {
