@@ -22,6 +22,16 @@ namespace JGeneral.IO.GPIO
             return new Controller(gpioPin, PinMode.Output);
         }
         
+        public static Controller OpenRead(Pins.Datasheet gpioPin)
+        {
+            return new Controller((byte)gpioPin, PinMode.Input);
+        }
+        
+        public static Controller OpenWrite(Pins.Datasheet gpioPin)
+        {
+            return new Controller((byte)gpioPin, PinMode.Output);
+        }
+        
         public static Controller OpenRead(byte gpioPin)
         {
             return new Controller(gpioPin, PinMode.Input);
