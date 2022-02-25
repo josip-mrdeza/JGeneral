@@ -55,7 +55,7 @@ namespace JGeneral.IO.Database
         {
             (DbWorkers.FirstOrDefault(x => x.Suitable) ?? DbWorkers[_random.Next(0, DbWorkers.Length)]).Assign(work);
         }
-
+        [Obsolete("Do not use.")]
         public void EstablishPipe()
         {
             _pipe = new NamedPipeServerStream("_spipe", PipeDirection.InOut, 1);
@@ -87,9 +87,13 @@ namespace JGeneral.IO.Database
         public void Store<T>(T instance, string id)
         {
             JObject<T> obj = instance;
+            obj.Id = id;
             AssignWork(() =>
             {
-                MemoryStorage.Storage.Add(id, obj);
+                if (!MemoryStorage.Storage.ContainsKey(id))
+                {
+                    MemoryStorage.Storage.Add(id, obj);
+                }
             }, StorePrefix + $"document '{id}' with value: '{obj.ObjectData.ToString()}'");
         }
         /// <summary>
@@ -100,7 +104,7 @@ namespace JGeneral.IO.Database
         /// <returns>The item.</returns>
         public async Task<T> LoadAsync<T>(string id)
         {
-            return (await AssignWork((() =>
+            var data = (await AssignWork((() =>
             {
                 try
                 {
@@ -110,8 +114,17 @@ namespace JGeneral.IO.Database
                 {
                     //ignore
                 }
+
                 return null;
-            }))).ObjectData;
+            })));
+            if (data is not null)
+            {
+                return data;
+            }
+            else
+            {
+                return (T)(new object());
+            }
         }
         /// <summary>
         /// Loads the item of type <see cref="T"/> with a qualifier Id from the <see cref="DbMemoryStorage"/>, synchronously.

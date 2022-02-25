@@ -4,17 +4,14 @@ namespace JGeneral.IO.GPIO
 {
     public class Controller
     {
-        private GpioController _controller { get; set; }
-        private byte _gpioPin;
+        private protected GpioController _controller { get; set; }
+        private protected byte _gpioPin;
         
         internal Controller(byte gpioPin, PinMode mode)
         {
             _gpioPin = gpioPin;
             _controller = new GpioController();
-            if (!_controller.IsPinOpen(gpioPin))
-            {
-                _controller.OpenPin(gpioPin, mode);
-            }
+            _controller.OpenPin(gpioPin, mode);
         }
 
         public static Controller OpenWrite(byte gpioPin)
@@ -49,11 +46,8 @@ namespace JGeneral.IO.GPIO
             }
             try
             {
-                if (_controller.IsPinOpen(_gpioPin))
-                {
-                    _controller.Write(_gpioPin, signal);
-                    OnWrite?.Invoke(_gpioPin);
-                }
+                _controller.Write(_gpioPin, signal ? PinValue.High : PinValue.Low);
+                OnWrite?.Invoke(_gpioPin);
                 return true;
             }
             catch

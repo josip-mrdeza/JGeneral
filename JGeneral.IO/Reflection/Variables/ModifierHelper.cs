@@ -10,8 +10,17 @@ namespace JGeneral.IO.Reflection
         {
             return new (variableId, instance, BindingFlags.Instance | BindingFlags.Public);
         }
-        
+        public static Modifier<TVariableInfo> CreatePublicModifierFrom<TVariableInfo>(this Object instance, string variableId)
+            where TVariableInfo : MemberInfo
+        {
+            return new (variableId, instance, BindingFlags.Instance | BindingFlags.Public);
+        }
         public static Modifier<TVariableInfo, TVariableInfoDataType> CreateNonPublicModifierFrom<TVariableInfo, TVariableInfoDataType>(this Object instance, string variableId)
+            where TVariableInfo : MemberInfo
+        {
+            return new (variableId, instance, BindingFlags.Instance | BindingFlags.NonPublic);
+        }
+        public static Modifier<TVariableInfo> CreateNonPublicModifierFrom<TVariableInfo>(this Object instance, string variableId)
             where TVariableInfo : MemberInfo
         {
             return new (variableId, instance, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -22,12 +31,20 @@ namespace JGeneral.IO.Reflection
         {
             return new (t, variableId, BindingFlags.Public | BindingFlags.Static);
         }
-        
+        public static StaticModifier<TVariableInfo> CreatePublicStaticModifierFrom<TVariableInfo>(this Type t, string variableId)
+            where TVariableInfo : MemberInfo
+        {
+            return new (t, variableId, BindingFlags.Public | BindingFlags.Static);
+        }
         public static StaticModifier<TVariableInfo, TVariableInfoDataType> CreateNonPublicStaticModifierFrom<TVariableInfo, TVariableInfoDataType>(this Type t, string variableId)
             where TVariableInfo : MemberInfo
         {
             return new (t, variableId, BindingFlags.NonPublic | BindingFlags.Static);
         }
-        
+        public static StaticModifier<TVariableInfo> CreateNonPublicStaticModifierFrom<TVariableInfo>(this Type t, string variableId)
+            where TVariableInfo : MemberInfo
+        {
+            return new (t, variableId, BindingFlags.NonPublic | BindingFlags.Static);
+        }
     }
 }

@@ -90,4 +90,36 @@ namespace JGeneral.IO.Reflection
             return (TReturn)Method.Invoke(Parent, new object[]{arg});
         }
     }
+    public class Executor
+    {
+        public MethodInfo Method;
+        public object Parent;
+        
+        private Executor(string method, object parentInstance)
+        {
+            Parent = parentInstance;
+            Method = parentInstance.GetType().GetMethod(method);
+        }
+        
+        /// <summary>
+        /// Provides an efficient way to run a method reflection-wise.
+        /// Note that values might be boxed in the case that they are structs.
+        /// </summary>
+        /// <param name="arg">An argument array used to invoke the method with.</param>
+        public object Run(params object[] arg)
+        {
+            return Method.Invoke(Parent, arg);
+        }
+        
+        /// <summary>
+        /// Provides an efficient way to run a method reflection-wise with an augmented parameter type.
+        /// Note that values might be boxed in the case that they are structs.
+        /// </summary>
+        /// <param name="arg">An argument of custom type TArg.</param>
+        /// <typeparam name="TArg">A custom type for the input parameters of the method.</typeparam>
+        public object Run<TArg>(TArg arg)
+        {
+            return Method.Invoke(Parent, new object[]{arg});
+        }
+    }
 }
