@@ -6,10 +6,14 @@ using JGeneral.IO.Reflection;
 
 namespace JGeneral.IO.Net
 {
+    /// <summary>
+    /// Broadcasts all it's received data ( from <see cref="BasicRemoteServer"/>'s requests ) to all available named pipes created with the Conveyor.CreateJConveyor() method.
+    /// </summary>
     public sealed class LogSenderServer : BasicRemoteServer
     {
         private static StaticExecutor<Task> _reflectionAwaiter;
-
+        /// <exception cref="MissingConveyors">Throws when the executing assembly does not have the Assembly
+        /// JGeneral.Conveyor loaded.</exception>
         public LogSenderServer()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
