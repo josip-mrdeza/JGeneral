@@ -11,6 +11,10 @@ namespace JGeneral.IO.Reflection
 {
     public class Modifier<TVariableInfo, TVariableInfoData> : IModifier<TVariableInfoData> where TVariableInfo : MemberInfo
     {
+        public object Parent { get; set; }
+        public _MemberInfo _info { get; set; }
+
+        public byte cfg { get; }
         public Modifier(string variableId, object parentInstance, BindingFlags flags)
         {
             Parent = parentInstance;
@@ -23,6 +27,9 @@ namespace JGeneral.IO.Reflection
                 {
                     throw new Exception("VSD is null, have you misspelled the name of the field, or is the field non-public?");
                 }
+                
+                Modify_Cached = o => (_info as FieldInfo)!.SetValue(Parent, o);
+                Get_Cached = () => (TVariableInfoData)(_info as FieldInfo)!.GetValue(Parent);
             }
             else
             {
@@ -32,42 +39,24 @@ namespace JGeneral.IO.Reflection
                 {
                     throw new Exception("Cannot instantiate class 'Modifier' on a get-only property.");
                 }
+                
+                Modify_Cached = o => (_info as PropertyInfo)!.SetValue(Parent, o);
+                Get_Cached = () => (TVariableInfoData)(_info as PropertyInfo)!.GetValue(Parent);
             }
         }
-        /// <param name="value">The new value of type TVariableInfoData</param>
-        public void Modify(TVariableInfoData value)
-        {
-            switch (cfg)
-            {
-                case 0:
-                {
-                    (_info as FieldInfo)!.SetValue(Parent, value);
-                    break;
-                }
-                case 1:
-                {
-                    (_info as PropertyInfo)!.SetValue(Parent, value);
-                    break;  
-                }
-            }
-        }
+        public void Modify(TVariableInfoData value) => Modify_Cached(value);
+        public TVariableInfoData Get() => Get_Cached();
 
-        public object Parent { get; set; }
-        public _MemberInfo _info { get; set; }
-
-        public byte cfg { get; }
-        public TVariableInfoData Get()
-        {
-            return cfg switch
-            {
-                0 => (TVariableInfoData) ((_info as FieldInfo)!.GetValue(Parent)),
-                1 => (TVariableInfoData) ((_info as PropertyInfo)!.GetValue(Parent)),
-                _ => throw new NotImplementedException("A strange error has occured.")
-            };
-        }
+        private readonly Action<TVariableInfoData> Modify_Cached;
+        private readonly Func<TVariableInfoData> Get_Cached;
     }
     public class Modifier<TVariableInfo> : IModifier<object> where TVariableInfo : MemberInfo
     {
+        public object Parent { get; set; }
+        public _MemberInfo _info { get; set; }
+
+        public byte cfg { get; }
+        
         public Modifier(string variableId, object parentInstance, BindingFlags flags)
         {
             Parent = parentInstance;
@@ -80,6 +69,9 @@ namespace JGeneral.IO.Reflection
                 {
                     throw new Exception("VSD is null, have you misspelled the name of the field, or is the field non-public?");
                 }
+
+                Modify_Cached = o => (_info as FieldInfo)!.SetValue(Parent, o);
+                Get_Cached = () => (_info as FieldInfo)!.GetValue(Parent);
             }
             else
             {
@@ -89,38 +81,16 @@ namespace JGeneral.IO.Reflection
                 {
                     throw new Exception("Cannot instantiate class 'Modifier' on a get-only property.");
                 }
-            }
-        }
-        /// <param name="value">The new value of type TVariableInfoData</param>
-        public void Modify(object value)
-        {
-            switch (cfg)
-            {
-                case 0:
-                {
-                    (_info as FieldInfo)!.SetValue(Parent, value);
-                    break;
-                }
-                case 1:
-                {
-                    (_info as PropertyInfo)!.SetValue(Parent, value);
-                    break;  
-                }
+                
+                Modify_Cached = o => (_info as PropertyInfo)!.SetValue(Parent, o);
+                Get_Cached = () => (_info as PropertyInfo)!.GetValue(Parent);
             }
         }
 
-        public object Parent { get; set; }
-        public _MemberInfo _info { get; set; }
+        public void Modify(object value) => Modify_Cached(value);
+        public object Get() => Get_Cached();
 
-        public byte cfg { get; }
-        public object Get()
-        {
-            return cfg switch
-            {
-                0 => ((_info as FieldInfo)!.GetValue(Parent)),
-                1 => ((_info as PropertyInfo)!.GetValue(Parent)),
-                _ => throw new NotImplementedException($"Cannot read member as {_info.GetType().FullName}.")
-            };
-        }
+        private readonly Action<object> Modify_Cached;
+        private readonly Func<object> Get_Cached;
     }
 }

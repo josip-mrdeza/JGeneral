@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JGeneral.Conveyor
+namespace JGeneral.Conveyors
 {
     public class JsonStream
     {
@@ -36,7 +36,6 @@ namespace JGeneral.Conveyor
             len += ioStream.ReadByte();
             byte[] inBuffer = new byte[len];
             await ioStream.ReadAsync(inBuffer, 0, len);
-
             return streamEncoding.GetString(inBuffer);
         }
 

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JGeneral.Conveyor
+namespace JGeneral.Conveyors.Wrappers
 {
     /// <summary>
     /// Provides a means to transfer managed objects to other processes through <see cref="IConveyor"/>s.

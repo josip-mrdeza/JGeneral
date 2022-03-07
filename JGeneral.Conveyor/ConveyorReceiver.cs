@@ -3,7 +3,7 @@ using System.IO.Pipes;
 using System.Threading.Tasks;
 using JGeneral.IO.Database;
 
-namespace JGeneral.Conveyor
+namespace JGeneral.Conveyors
 {
     /// <summary>
     /// Used to receive data from another process's <see cref="ConveyorSender"/>.
@@ -11,7 +11,7 @@ namespace JGeneral.Conveyor
     public sealed class ConveyorReceiver : IConveyor
     {
         public string Name { get; set; }
-        private readonly NamedPipeServerStream _serverStream;
+        internal readonly NamedPipeServerStream _serverStream;
         public readonly JsonStream _jsonStream;
         
         internal ConveyorReceiver(string serverId)
@@ -21,9 +21,9 @@ namespace JGeneral.Conveyor
             _jsonStream = new JsonStream(_serverStream);
         }
 
-        public async Task WaitForConnection()
+        public void WaitForConnection()
         {
-            await _serverStream.WaitForConnectionAsync();
+            _serverStream.WaitForConnection();
             Connected?.Invoke();
         }
 

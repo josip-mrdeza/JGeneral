@@ -4,7 +4,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using JGeneral.IO.Database;
 
-namespace JGeneral.Conveyor
+namespace JGeneral.Conveyors
 {
     /// <summary>
     /// Sends data to another process's instance of <see cref="ConveyorReceiver"/>.
@@ -12,7 +12,7 @@ namespace JGeneral.Conveyor
     public sealed class ConveyorSender : IConveyor
     {
         public string Name { get; set; }
-        private readonly NamedPipeClientStream _clientStream;
+        internal readonly NamedPipeClientStream _clientStream;
         public readonly JsonStream _jsonStream;
 
         internal ConveyorSender(string serverId)

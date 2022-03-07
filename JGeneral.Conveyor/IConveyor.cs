@@ -1,4 +1,4 @@
-namespace JGeneral.Conveyor
+namespace JGeneral.Conveyors
 {
     
     public interface IConveyor

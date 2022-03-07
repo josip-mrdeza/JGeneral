@@ -21,13 +21,7 @@ namespace JGeneral.IO.Database
         {
             return new (instance, id);
         }
-
-        public static string ToJson<T>(this JObject<T> obj)
-        {
-            StringBuilder b = new StringBuilder();
-            serializer.Serialize(new JsonTextWriter(new StringWriter(b)), obj.ObjectData);
-            return b.ToString();
-        }
+        
         public static string ToJson<T>(this T obj)
         {
             StringBuilder b = new StringBuilder();

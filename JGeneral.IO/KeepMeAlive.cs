@@ -9,52 +9,69 @@ namespace JGeneral.IO
 {
     public static class KeepMeAlive
     {
-        private static List<ProcessStartInfo> Programs { get; set; }
+        private static List<(string name, Process process)> Programs { get; set; }
+        //private static List<Action<string, string>> ProgramFiles { get; set; }
 
-        public static void Keep(Process process)
+        private static readonly Func<string, string, Process> _runner = (file, args) =>
         {
-            process.StartInfo.FileName = process.ProcessName.EndsWith(".exe") ? process.ProcessName : process.ProcessName + ".exe";
-            process.StartInfo.CreateNoWindow = true;
-            Programs.Add(process.StartInfo); 
-        }
-
-        public static void Keep(string processname)
-        {
-            var process = Process.GetProcessesByName(processname).FirstOrDefault();
-            process.StartInfo.FileName = process.ProcessName.EndsWith(".exe") ? process.ProcessName : process.ProcessName + ".exe";
-            process.StartInfo.CreateNoWindow = true;
-            Programs.Add(process.StartInfo); 
-        }
+            var process = Process.Start(file, args);
+            Console.WriteLine($"Started file: {file}!");
+            return process;
+        };
         
-        public static void Start()
+        private static readonly Action<string, string> _keepFn = (filename, args) =>
         {
-            Programs ??= new List<ProcessStartInfo>();
+            var fn = filename.Replace(".exe", "");
+            var processes = Process.GetProcesses();
+            var process = processes.FirstOrDefault(x => x.MainModule.FileName.Contains(fn) || x.MainWindowTitle.Contains(fn) || x.MainWindowTitle.Contains(fn));
+            process.Exited += (_, _) =>
+            {
+                StartAndKeepRunning(process.StartInfo.FileName, new []{args});
+            };
+        };
+
+        public static void Keep(this Process process, string path)
+        {
+            process.StartInfo.FileName = process.ProcessName.EndsWith(".exe") ? process.ProcessName : process.ProcessName + ".exe";
+            process.StartInfo.CreateNoWindow = false;
+            Programs?.Add((path, process));
+            Console.WriteLine($"Keeping process {process.StartInfo.FileName}!");
+        }
+
+        public static Process StartAndKeepRunning(string file, params string[] args)
+        {
+            string str = "";
+            for (int i = 0; i < args.Length; i++)
+            {
+                str += args[i] + " ";
+            }
+            var proc = _runner(file, str);
+            proc.Keep(file);
+            return proc;
+        }
+        public static void Start(int updateInterval = 1000)
+        {
+            Programs ??= new List<(string name, Process process)>();
             ThreadPool.QueueUserWorkItem(cb =>
             {
                 while (true)
                 {
                     try
                     {
-                        var running = Process.GetProcesses().Select(x => x.ProcessName).ToList();
-                        foreach (var program in Programs)
+                        var exited = Programs.Where(x => x.process.HasExited).ToArray();
+                        Programs.RemoveAll(x => x.process.HasExited);
+                        for (int i = 0; i < exited.Length; i++)
                         {
-                            string fn = program.FileName.Replace(".exe", "");
-                            if (!running.Exists(x => x == fn))
-                            {
-                                Console.WriteLine($"Noticed program: {program.FileName} was closed, starting again...");
-                                Process.Start(program);
-                            }
+                            Programs.Add((exited[i].name, Process.Start(exited[i].name, exited[i].process.StartInfo.Arguments)));
                         }
-
-                        running = null;
                     }
                     catch(Exception e)
                     {
-                        Console.WriteLine($"Failed: {e.Message}!");
+                        Console.WriteLine($"Failed in keeping: {e.Message}!");
                     }
                     finally
                     {
-                        Task.Delay(2500).Wait();
+                        Task.Delay(updateInterval).Wait();
                     }
                 }
             });

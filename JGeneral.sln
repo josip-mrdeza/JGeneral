@@ -16,6 +16,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.Unity", "JGeneral.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.Conveyor", "JGeneral.Conveyor\JGeneral.Conveyor.csproj", "{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.DataServer", "JGeneral.DataServer\JGeneral.DataServer.csproj", "{1A5FD2E9-F1CB-414A-9D06-56577E9B310D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phantia", "Phantia\Phantia.csproj", "{A240E2A6-20C0-4801-BA2D-60A82A9D812A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.CSG", "JGeneral.CSG\JGeneral.CSG.csproj", "{6D6F0625-9C58-4C96-8CF4-8E44F43D7FE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataServerSender", "DataServerSender\DataServerSender.csproj", "{B0C72208-98D1-4A17-8E63-2AEB4C62A058}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.Conveyor.Logger", "JGeneral.Conveyor.Logger\JGeneral.Conveyor.Logger.csproj", "{8532A6C4-CF11-402C-84B0-7026321FB7F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.DataServer.Logger", "JGeneral.DataServer.Logger\JGeneral.DataServer.Logger.csproj", "{1FF4045A-48BA-4540-B6A0-A8CAB9D09049}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +66,29 @@ Global
 		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F37AC56-9B8B-4B4D-BAFB-8EB00CCFB32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A5FD2E9-F1CB-414A-9D06-56577E9B310D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A5FD2E9-F1CB-414A-9D06-56577E9B310D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A5FD2E9-F1CB-414A-9D06-56577E9B310D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A5FD2E9-F1CB-414A-9D06-56577E9B310D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A240E2A6-20C0-4801-BA2D-60A82A9D812A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A240E2A6-20C0-4801-BA2D-60A82A9D812A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A240E2A6-20C0-4801-BA2D-60A82A9D812A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A240E2A6-20C0-4801-BA2D-60A82A9D812A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6F0625-9C58-4C96-8CF4-8E44F43D7FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F0625-9C58-4C96-8CF4-8E44F43D7FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F0625-9C58-4C96-8CF4-8E44F43D7FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6F0625-9C58-4C96-8CF4-8E44F43D7FE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C72208-98D1-4A17-8E63-2AEB4C62A058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C72208-98D1-4A17-8E63-2AEB4C62A058}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C72208-98D1-4A17-8E63-2AEB4C62A058}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C72208-98D1-4A17-8E63-2AEB4C62A058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8532A6C4-CF11-402C-84B0-7026321FB7F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8532A6C4-CF11-402C-84B0-7026321FB7F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8532A6C4-CF11-402C-84B0-7026321FB7F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8532A6C4-CF11-402C-84B0-7026321FB7F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF4045A-48BA-4540-B6A0-A8CAB9D09049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF4045A-48BA-4540-B6A0-A8CAB9D09049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF4045A-48BA-4540-B6A0-A8CAB9D09049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF4045A-48BA-4540-B6A0-A8CAB9D09049}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

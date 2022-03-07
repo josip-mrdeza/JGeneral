@@ -1,6 +1,6 @@
 using System;
 
-namespace JGeneral.Conveyor
+namespace JGeneral.Conveyors
 {
     public class ConveyorObject
     {

@@ -38,9 +38,9 @@ namespace JGeneral.IO.Database
         /// </summary>
         /// <param name="action">The <see cref="Action"/> to be executed.</param>
         /// <param name="methodName">A private name of the anonymous method used for logging purposes only.</param>
-        public void Assign(Action action, string methodName = "[Anonymous_Method]")
+        public async void Assign(Action action, string methodName = "[Anonymous_Method]")
         {
-            _queue.QueueUp(action, methodName).Wait();
+            await _queue.QueueUp(action, methodName);
         }
         /// <summary>
         /// Assigns an <see cref="Func{T1}"/> to the <see cref="JWorker"/> with it's private name for logging purposes.
