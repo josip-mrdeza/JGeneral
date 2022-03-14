@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using JGeneral.IO.Database;
 
 namespace JGeneral.Conveyors.Wrappers
 {
@@ -11,6 +14,8 @@ namespace JGeneral.Conveyors.Wrappers
     /// </summary>
     public class Conveyor : ConveyorWrapper
     {
+        private static WebClient _client = new WebClient();
+        public const ushort LocalPort = 1407;
         public Conveyor(string serverId, string remoteId) : base(serverId, remoteId)
         {
         }
@@ -22,6 +27,18 @@ namespace JGeneral.Conveyors.Wrappers
             {
                 sender.Connect();
                 await sender.Transmit(jsonObject);
+            }
+        }
+
+        public static void BroadcastHttp(string obj)
+        {
+            try
+            {
+                _client.UploadString("http://localhost:1407/", obj);
+            }
+            catch
+            {
+                //ignored
             }
         }
         /// <summary>

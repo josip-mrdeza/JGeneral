@@ -65,7 +65,11 @@ namespace JGeneral.IO.Net
         
         private IRemoteCommand[] GetQueue(string id)
         {
-            return QueuedCommands != null && !QueuedCommands.ContainsKey(id) ? new IRemoteCommand[0] : QueuedCommands![id].ToArray();
+            if (QueuedCommands is null)
+            {
+                return new IRemoteCommand[0];
+            }
+            return !QueuedCommands.ContainsKey(id) ? new IRemoteCommand[0] : QueuedCommands![id].ToArray();
         }
         
 
@@ -73,34 +77,29 @@ namespace JGeneral.IO.Net
         {
             if (QueuedCommands is null)
             {
+                listenerContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                listenerContext.Response.OutputStream.Close();
                 return;
             }
             
-            if (listenerContext.Request.Url.Segments.Length == 3)
-            {
-                var scopeId = listenerContext.Request.Url.Segments[1].Replace("/", "");
-                LogBackIn(scopeId);
-                if (listenerContext.Request.Url.Segments.Last() == "update")
-                {
-                    var scopeData = new InternalRemoteCommand[]
-                    {
-                        new InternalRemoteCommand(Guid.NewGuid(), Command.Update,
-                                                  new UpdateArgs("JGeneral.IO", File.ReadAllBytes("JGeneral.IO.dll")).ToJsonBytes())
-                    };
-                    if (QueuedCommands.ContainsKey(scopeId))
-                    {
-                        QueuedCommands[scopeId].AddRange(scopeData);
-                    }
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-                return; 
-            }
             var id = listenerContext.Request.Url.Segments.Last();
             if (id == "/")
             {
+                listenerContext.Response.StatusCode = (int)HttpStatusCode.PreconditionFailed;
+                listenerContext.Response.OutputStream.Close();
+                return;
+            }
+            else if (id == "users")
+            {
+                if (QueuedCommands.Count == 0)
+                {
+                    listenerContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
+                    listenerContext.Response.OutputStream.Close();
+                    return;
+                }
+                var users = QueuedCommands.Select(x => x.Key).ToJsonBytes();
+                listenerContext.Response.ContentLength64 = users.Length;
+                await listenerContext.Response.OutputStream.WriteAsync(users, 0, users.Length);
                 return;
             }
 
@@ -108,11 +107,17 @@ namespace JGeneral.IO.Net
             if (data == null)
             {
                 data = GetQueue(id);
+                if (data.Length == 0)
+                {
+                    listenerContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
+                    listenerContext.Response.OutputStream.Close(); 
+                    return;
+                }
             }
 
-            var dta = data.ToJsonBytes();
-            listenerContext.Response.ContentLength64 = dta.Length; 
-            await listenerContext.Response.OutputStream.WriteAsync(dta, 0, dta.Length);
+            var jsonData = data.ToJsonBytes();
+            listenerContext.Response.ContentLength64 = jsonData.Length; 
+            await listenerContext.Response.OutputStream.WriteAsync(jsonData, 0, jsonData.Length);
             LogBackIn(id);
         }
         /// <summary>
@@ -175,35 +180,29 @@ namespace JGeneral.IO.Net
                 if (!QueuedCommands.ContainsKey(id))
                 {
                     QueuedCommands.Add(id, new List<IRemoteCommand>());
-                    listenerContext.Response.StatusCode = 201;
                     OnRegister?.Invoke(id);
+                    listenerContext.Response.StatusCode = 201;
                     return;
                 }
-                listenerContext.Response.StatusCode = 409;
+                else
+                {
+                    var bytes = new byte[length];
+                    await listenerContext.Request.InputStream.ReadAsync(bytes, 0, bytes.Length);
+                    var bAsJson = bytes.FromJsonBytes<ShellArgs>();
+                    var guid = Guid.NewGuid();
+                    OnAddCommand?.Invoke(id, guid);
+                    QueuedCommands[id].Add(new InternalRemoteCommand(guid, Command.Shell, bytes));
+                    var respData = Encoding.ASCII.GetBytes($"Current commands queued for '{id}': {QueuedCommands[id].Count.ToString()}\n" + QueuedCommands.Last().ToJson());
+                    await listenerContext.Response.OutputStream.WriteAsync(respData, 0, respData.Length);
+                    listenerContext.Response.StatusCode = (int) HttpStatusCode.Created;
+                }
+
                 OnFailedToRegister?.Invoke(id);
             }
         }
-        /// <summary>
-        /// Adding commands externally.
-        /// </summary>
-        /// <param name="listenerContext"></param>
-        /// <param name="length"></param>
+        //secondary get method.
         protected override async Task HttpPatch(HttpListenerContext listenerContext, long length)
         {
-            if (QueuedCommands is null)
-            {
-                return;
-            }
-            var id = listenerContext.Request.Url.Segments.Last();
-            LogBackIn(id);
-            if (QueuedCommands.ContainsKey(id))
-            {
-                byte[] buffer = new byte[listenerContext.Request.ContentLength64];
-                await listenerContext.Request.InputStream.ReadAsync(buffer, 0, buffer.Length);
-                var json = Encoding.ASCII.GetString(buffer);
-                var response = json.FromJsonText<InternalRemoteCommand>();
-                QueuedCommands[id].Add(response);
-            }
         }
 
         public BasicRemoteServer()
@@ -217,5 +216,6 @@ namespace JGeneral.IO.Net
         public event Action<string> OnRegister;
         public event Action<string> OnFailedToRegister;
         public event Action<string, Guid> OnConsumedCommand;
+        public event Action<string, Guid> OnAddCommand;
     }
 }

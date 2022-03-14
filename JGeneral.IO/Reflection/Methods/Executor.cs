@@ -63,7 +63,7 @@ namespace JGeneral.IO.Reflection
         public MethodInfo Method;
         public object Parent;
         
-        private Executor(string method, object parentInstance)
+        public Executor(string method, object parentInstance)
         {
             Parent = parentInstance;
             Method = parentInstance.GetType().GetMethod(method);
@@ -95,7 +95,7 @@ namespace JGeneral.IO.Reflection
         public MethodInfo Method;
         public object Parent;
         
-        private Executor(string method, object parentInstance)
+        public Executor(string method, object parentInstance)
         {
             Parent = parentInstance;
             Method = parentInstance.GetType().GetMethod(method);

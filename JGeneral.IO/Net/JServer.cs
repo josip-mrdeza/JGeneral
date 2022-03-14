@@ -29,6 +29,7 @@ namespace JGeneral.IO.Net
                             {
                                 await HttpGet(context);
                                 OnCompleteGet?.Invoke(context.Request.RawUrl);
+                                OnComplete_Full?.Invoke(context.Request.RawUrl, "GET", (context.Request.ContentLength64, context.Response.ContentLength64));
                                 context.Request.InputStream.Close();
                                 break;
                             }
@@ -36,6 +37,7 @@ namespace JGeneral.IO.Net
                             {
                                 await HttpPost(context, context.Request.ContentLength64);
                                 OnCompletePost?.Invoke(context.Request.RawUrl);
+                                OnComplete_Full?.Invoke(context.Request.RawUrl, "POST", (context.Request.ContentLength64, context.Response.ContentLength64));
                                 context.Request.InputStream.Close(); 
                                 context.Response.OutputStream.Close();
                                 break;
@@ -44,6 +46,7 @@ namespace JGeneral.IO.Net
                             {
                                 await HttpPut(context, context.Request.ContentLength64);
                                 OnCompletePut?.Invoke(context.Request.RawUrl);
+                                OnComplete_Full?.Invoke(context.Request.RawUrl, "PUT", (context.Request.ContentLength64, context.Response.ContentLength64));
                                 context.Request.InputStream.Close();
                                 context.Response.OutputStream.Close();
                                 break;
@@ -52,6 +55,7 @@ namespace JGeneral.IO.Net
                             {
                                 await HttpPatch(context, context.Request.ContentLength64);
                                 OnCompletePut?.Invoke(context.Request.RawUrl);
+                                OnComplete_Full?.Invoke(context.Request.RawUrl, "PATCH", (context.Request.ContentLength64, context.Response.ContentLength64));
                                 context.Request.InputStream.Close();
                                 context.Response.OutputStream.Close();
                                 break;
@@ -59,6 +63,7 @@ namespace JGeneral.IO.Net
                             default:
                             {
                                 context.Response.StatusCode = 204;
+                                OnComplete_Full?.Invoke(context.Request.RawUrl, "unknown", (context.Request.ContentLength64, context.Response.ContentLength64));
                                 context.Request.InputStream.Close();
                                 context.Response.OutputStream.Close();
                                 break;
@@ -116,6 +121,7 @@ namespace JGeneral.IO.Net
 
         private readonly HttpListener Listener;
         public event Action<string> OnCompleteGet;
+        public event Action<string, string, (long input, long output)> OnComplete_Full;
         public event Action<Exception> OnFailedGet;
         public event Action<string> OnCompletePost;
         public event Action<Exception> OnFailedPost;
