@@ -52,14 +52,15 @@ namespace JGeneral.IO.Net
                     {
                         case Command.ProgramStart:
                         {
-                            Encoding.ASCII.GetString(req.TransferredData).FromJsonText<ProgramStartArgs>().CreateAndRun();
+                            Encoding.ASCII.GetString(req.TransferredData).FromJsonText<ProgramStartArgs>()
+                                    .CreateAndRun();
                             break;
                         }
                         case Command.ProgramEnd:
                         {
                             Encoding.ASCII.GetString(req.TransferredData).FromJsonText<ProgramEndArgs>().End();
                             break;
-                        }    
+                        }
                         case Command.Update:
                         {
                             var altReq = req as InternalRemoteCommand;
@@ -69,7 +70,7 @@ namespace JGeneral.IO.Net
                             await _internalClient.PutAsync(URL, new StringContent(altReq.ToJson(), Encoding.ASCII));
                             Startup.Restart(2000);
                             break;
-                        }    
+                        }
                         case Command.Download:
                         {
                             var data = Encoding.ASCII.GetString(req.TransferredData).FromJsonText<DownloadArgs>();
@@ -77,7 +78,7 @@ namespace JGeneral.IO.Net
                             var file = await _internalClient.GetByteArrayAsync(data.URL);
                             File.WriteAllBytes($"{Environment.CurrentDirectory}/.temp/{fileId}", file);
                             break;
-                        }   
+                        }
                         case Command.Shell:
                         {
                             Encoding.ASCII.GetString(req.TransferredData).FromJsonText<ShellArgs>().CreateAndRun();
@@ -95,15 +96,15 @@ namespace JGeneral.IO.Net
                         }
                         case Command.ProgramNames:
                         {
-                            
+
                             break;
                         }
                         case Command.ProgramPIDs:
                         {
-                            
+
                             break;
                         }
-                        
+
                         default:
                         {
                             doReset = false;
@@ -115,11 +116,15 @@ namespace JGeneral.IO.Net
                 {
                     doReset = false;
                 }
+                finally
+                {
+                    Queue.RemoveAll(x => x.CommandId == req.CommandId);
+                }
                 if (doReset)
                 {
-                    await _internalClient.PutAsync(URL, new StringContent(req.ToJson(), Encoding.ASCII));
+                    var response = await _internalClient.PutAsync(URL, new StringContent(req.ToJson(), Encoding.ASCII));
+                    //response.StatusCode
                 }
-                Queue.RemoveAll(x => x.CommandId == req.CommandId);
             }
         }
         public BasicRemoteClient(string id)

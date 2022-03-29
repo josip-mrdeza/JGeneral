@@ -7,7 +7,7 @@ using Microsoft.CSharp;
 
 namespace JGeneral.IO
 {
-    public static class Complier
+    public static class Compiler
     {
         public static string Compile(string dir, string dll, bool exe = false)
         {

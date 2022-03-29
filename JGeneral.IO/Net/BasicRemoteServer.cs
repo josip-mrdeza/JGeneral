@@ -191,8 +191,9 @@ namespace JGeneral.IO.Net
                     var bAsJson = bytes.FromJsonBytes<ShellArgs>();
                     var guid = Guid.NewGuid();
                     OnAddCommand?.Invoke(id, guid);
-                    QueuedCommands[id].Add(new InternalRemoteCommand(guid, Command.Shell, bytes));
-                    var respData = Encoding.ASCII.GetBytes($"Current commands queued for '{id}': {QueuedCommands[id].Count.ToString()}\n" + QueuedCommands.Last().ToJson());
+                    var commands = QueuedCommands[id]; 
+                    commands.Add(new InternalRemoteCommand(guid, Command.Shell, bytes));
+                    var respData = Encoding.ASCII.GetBytes($"Current commands queued for '{id}': {commands.Count.ToString()}\n" + commands.ToJson());
                     await listenerContext.Response.OutputStream.WriteAsync(respData, 0, respData.Length);
                     listenerContext.Response.StatusCode = (int) HttpStatusCode.Created;
                 }
