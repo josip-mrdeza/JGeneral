@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JGeneral.IO.Database;
 using JGeneral.IO.Net.V2.Services;
+using JGeneral.IO.Net.V2.Services.Helpers;
 
 namespace JGeneral.IO.Net.V2.Services
 {
@@ -16,44 +17,36 @@ namespace JGeneral.IO.Net.V2.Services
             Id = "report";
         }
 
-        protected override (int code, int received, int sent) Get(HttpListenerContext httpListenerContext)
+        protected override void Get(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            int code = 0;
-            var received = 0;
-            var sent = 0;
             try
             {
-                var username = httpListenerContext.GetUriSegments()[1];
+                var username = resources[1];
                 if (Reports.ContainsKey(username))
                 {
-                    Reports[username].ToJsonBytes().WriteAllToOutput(httpListenerContext);
-                    code = 200;
+                    info.Sent = Reports[username].ToJsonBytes().WriteAllToOutput(httpListenerContext);
+                    info.Code = 200;
                 }
                 else
                 {
                     var str = $"Dictionary does not contain values for id: {username}!";
-                    Encoding.ASCII.GetBytes(str).WriteAllToOutput(httpListenerContext);
-                    code = 404;
+                    info.Sent = Encoding.ASCII.GetBytes(str).WriteAllToOutput(httpListenerContext);
+                    info.Code = 404;
                 }
             }
             catch (Exception e)
             {
-                code = 500;
+                info.Code = 500;
                 Logger.Log(e, nameof(ReporterService), nameof(Get));
             }
-            
-            return (code, received, sent);
         }
 
-        protected override (int code, int received, int sent) Post(HttpListenerContext httpListenerContext)
+        protected override void Post(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            int code = 0;
-            var received = 0;
-            var sent = 0;
             try
             {
-                var data = httpListenerContext.ReadAllInputAsString(out received);
-                var username = httpListenerContext.GetUriSegments()[1];
+                var data = httpListenerContext.ReadAllInputAsString(out info.Received);
+                var username = resources[1];
                 if (Reports.ContainsKey(username))
                 {
                     Reports[username].Add(data);
@@ -66,15 +59,13 @@ namespace JGeneral.IO.Net.V2.Services
                     });
                 }
 
-                code = 201;
+                info.Code = 201;
             }
             catch (Exception e)
             {
-                code = 500;
+                info.Code = 500;
                 Logger.Log(e, nameof(ReporterService), nameof(Post));
             }
-
-            return (code, received, sent);
         }
     }
 }

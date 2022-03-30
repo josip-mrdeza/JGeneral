@@ -144,6 +144,7 @@
         <Compile Include="Net\V2\RouterExtensions.cs" />
         <Compile Include="Net\V2\Services\FileService.cs" />
         <Compile Include="Net\V2\Services\HandlerMethod.cs" />
+        <Compile Include="Net\V2\Services\Helpers\ContextInfo.cs" />
         <Compile Include="Net\V2\Services\ManagerService.cs" />
         <Compile Include="Net\V2\Services\NetworkService.cs" />
         <Compile Include="Net\V2\Services\RemoteProcessor.cs" />
@@ -166,17 +167,23 @@
         <Compile Include="Unity\UnityProcess.cs" />
         <Compile Include="Updates\AppVersion.cs" />
         <Compile Include="Updates\UpdateClient.cs" />
+        <Compile Include="Version.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Net\V2\Services\Helpers" />
       <Folder Include="Reflection\Unity" />
     </ItemGroup>
     <ItemGroup>
       <Content Include=".jserver" />
       <Content Include=".jversion">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Net\V2\LICENSE">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Net\V2\loophole.exe">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

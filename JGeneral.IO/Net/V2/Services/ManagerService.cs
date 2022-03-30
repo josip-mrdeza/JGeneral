@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using JGeneral.IO.Database;
+using JGeneral.IO.Net.V2.Services.Helpers;
 
 namespace JGeneral.IO.Net.V2.Services
 {
@@ -15,37 +16,31 @@ namespace JGeneral.IO.Net.V2.Services
             NetworkServices = NetworkRouter.Instance.Services;
         }
 
-        protected override (int code, int received, int sent) Get(HttpListenerContext httpListenerContext)
+        protected override void Get(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            int code, received, sent;
-            received = 0;
-            sent = 0;
             try
             {
-                var segments = httpListenerContext.GetUriSegments();
                 string json = string.Empty;
-                if (segments.Length == 1)
+                if (resources.Length == 1)
                 {
                     json = NetworkServices.ToJson();
                 }
-                else if (segments.Length > 1)
+                else if (resources.Length > 1)
                 {
-                    var id = segments[1];
+                    var id = resources[1];
                     var service = NetworkServices[id];
                     json = service.ToJson();
                 }
 
-                code = 200;
-                sent = Encoding.UTF8.GetBytes(json).WriteAllToOutput(httpListenerContext);
+                info.Code = 200;
+                info.Sent = Encoding.UTF8.GetBytes(json).WriteAllToOutput(httpListenerContext);
             }
             catch (Exception e)
             {
-                code = 500;
+                info.Code = 500;
                 Logger.Log(e, nameof(ManagerService), nameof(Get));
                 LatestException = e;
             }
-
-            return (code, received, sent);
         }
     }
 }

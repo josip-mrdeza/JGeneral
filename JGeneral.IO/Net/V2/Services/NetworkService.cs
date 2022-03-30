@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using JGeneral.IO.Logging;
+using JGeneral.IO.Net.V2.Services.Helpers;
 
 namespace JGeneral.IO.Net.V2.Services
 {
@@ -18,41 +19,6 @@ namespace JGeneral.IO.Net.V2.Services
         public bool IsOnline;   
         public ShortException LatestException;
         private protected ConsoleLogger Logger = NetworkRouter.Logger;
-        /// <summary>
-        /// These handlers may be overriden by classes deriving from <see cref="NetworkService"/>. 
-        /// </summary>
-        /// <param name="handler">The function to be executed on new request of type <see cref="HandlerMethod"/>.</param>
-        /// <param name="httpMethod">The request type.</param>
-        public void AddHandler(Func<HttpListenerContext, (int code, int received, int sent)> handler, HandlerMethod httpMethod)
-        {
-            switch (httpMethod)
-            {
-                case HandlerMethod.Get:
-                {
-                    VirtualHandlers.Add(HandlerMethod.Get, handler);
-                    CachedGet = handler;
-                    break;
-                }          
-                case HandlerMethod.Post:
-                {
-                    VirtualHandlers.Add(HandlerMethod.Post, handler);
-                    CachedPost = handler;
-                    break;
-                }                
-                case HandlerMethod.Put:
-                {
-                    VirtualHandlers.Add(HandlerMethod.Put, handler);
-                    CachedPut = handler;
-                    break;
-                }
-                default:
-                {
-                    Logger.Log(new Exception($"Adding handlers to Http Method '{httpMethod.ToString()}' isn't allowed for NetworkService with id '{Id}'!"), 
-                        Id.ToUpper() + "_(Unknown)", nameof(AddHandler));
-                    break;
-                }
-            }
-        }
 
         public NetworkService()
         {
@@ -69,145 +35,94 @@ namespace JGeneral.IO.Net.V2.Services
             IsOnline = true;
         }
         
-        protected virtual (int code, int received, int sent) Get(HttpListenerContext httpListenerContext)
+        protected virtual void Get(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            if (VirtualHandlers.ContainsKey(HandlerMethod.Get))
-            {
-                CachedGet ??= VirtualHandlers[HandlerMethod.Get];
-
-                return CachedGet.Invoke(httpListenerContext);
-            }
-            return ((int)HttpStatusCode.Forbidden, 0, 0);
+            info.Code = (int)HttpStatusCode.Forbidden;
         }
-        protected virtual (int code, int received, int sent) Post(HttpListenerContext httpListenerContext)
+        protected virtual void Post(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            if (VirtualHandlers.ContainsKey(HandlerMethod.Post))
-            {
-                CachedPost ??= VirtualHandlers[HandlerMethod.Post];
-
-                return CachedPost.Invoke(httpListenerContext);
-            }
-            return ((int)HttpStatusCode.Forbidden, 0, 0);
+            info.Code = (int)HttpStatusCode.Forbidden;
         }
-        protected virtual (int code, int received, int sent) Put(HttpListenerContext httpListenerContext)
+        protected virtual void Put(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            if (VirtualHandlers.ContainsKey(HandlerMethod.Put))
-            {
-                CachedPut ??= VirtualHandlers[HandlerMethod.Put];
-
-                return CachedPut.Invoke(httpListenerContext);
-            }
-            return ((int)HttpStatusCode.Forbidden, 0, 0);
+            info.Code = (int)HttpStatusCode.Forbidden;
         }
         
-        internal (int code, int received, int sent) _Get(HttpListenerContext context)
+        internal void _Get(HttpListenerContext context, string[] resources, ref ContextInfo info)
+        {
+            HandleRequest(context, resources, ref info, HandlerMethod.Get);
+        }
+        internal void _Post(HttpListenerContext context, string[] resources, ref ContextInfo info)
+        {
+            HandleRequest(context, resources, ref info, HandlerMethod.Post);
+        }
+        internal void _Put(HttpListenerContext context, string[] resources, ref ContextInfo info)
+        {
+            HandleRequest(context, resources, ref info, HandlerMethod.Put);
+        }
+        private void HandleRequest(HttpListenerContext context, string[] resources, ref ContextInfo info, HandlerMethod method)
         {
             if (!IsOnline)
             {
-                return (503, 0, 0);
+                info.Code = 503;
             }
-            
+
             try
             {
-                var result = Get(context);
-                
-                var receivedMb = result.received / 1_000_000d;
-                var sentMb = result.sent / 1_000_000d; 
-                TotalReceivedMb += receivedMb;
-                TotalSentMb += sentMb;
-                TotalTransferredMb += (receivedMb + sentMb);
-
-                TotalReceivedMb = Math.Round(TotalReceivedMb, 4);
-                TotalSentMb = Math.Round(TotalSentMb, 4);
-                TotalTransferredMb += (receivedMb + sentMb);
-                TotalTransferredMb = Math.Round(TotalTransferredMb, 4);
-
-                if (result.code is 500)
+                switch (method)
                 {
-                    FailedRequests++;
+                    case HandlerMethod.Get:
+                    {
+                        Get(context, resources, ref info);
+                        break;
+                    }
+                    case HandlerMethod.Post:
+                    {
+                        Post(context, resources, ref info);
+                        break;
+                    }
+                    case HandlerMethod.Put:
+                    {
+                        Put(context, resources, ref info);
+                        break;
+                    }
+                    case HandlerMethod.Delete:
+                    {
+                        info.Code = 503;
+                        break;
+                    }
+                    default:
+                    {
+                        info.Code = 503;
+                        break;
+                    }
                 }
-                else
-                {
-                    SuccessfulRequests++;
-                }
-                return result;
+
+                IncrementInfos(info);
             }
-            catch (Exception e)
+            catch
             {
                 FailedRequests++;
-                return ((int)HttpStatusCode.InternalServerError, 0, 0);
+                info.Code = 500;
             }
         }
-        internal (int code, int received, int sent) _Post(HttpListenerContext context)
+
+        private void IncrementInfos(ContextInfo info)
         {
-            if (!IsOnline)
-            {
-                return (503, 0, 0);
-            }
-            
-            try
-            {
-                var result = Post(context);
-                
-                var receivedMb =result.received / 1_000_000d;
-                var sentMb = result.sent / 1_000_000d; 
-                TotalReceivedMb += receivedMb;
-                TotalSentMb += sentMb;
-                TotalTransferredMb += (receivedMb + sentMb);
-                
-                if (result.code is 500)
-                {
-                    FailedRequests++;
-                }
-                else
-                {
-                    SuccessfulRequests++;
-                }
-                return result;
-            }
-            catch (Exception e)
-            {
-                FailedRequests++;
-                return ((int)HttpStatusCode.InternalServerError, 0, 0);
-            }
-        }
-        internal (int code, int received, int sent) _Put(HttpListenerContext context)
-        {
-            if (!IsOnline)
-            {
-                return (503, 0, 0);
-            }
-            
-            try
-            {
-                var result = Put(context);
-                
-                var receivedMb =result.received / 1_000_000d;
-                var sentMb = result.sent / 1_000_000d; 
-                TotalReceivedMb += receivedMb;
-                TotalSentMb += sentMb;
-                TotalTransferredMb += (receivedMb + sentMb);
-                
-                if (result.code is 500)
-                {
-                    FailedRequests++;
-                }
-                else
-                {
-                    SuccessfulRequests++;
-                }
-                return result;
-            }
-            catch (Exception e)
-            {
-                FailedRequests++;
-                return ((int)HttpStatusCode.InternalServerError, 0, 0);
-            }
-        }
+            var receivedMb = info.Received / 1_000_000d;
+            var sentMb = info.Sent / 1_000_000d;
+            TotalReceivedMb += receivedMb;
+            TotalSentMb += sentMb;
+            TotalTransferredMb += (receivedMb + sentMb);
 
-        private Dictionary<HandlerMethod, Func<HttpListenerContext, (int code, int received, int sent)>> VirtualHandlers = new ();
-        private Func<HttpListenerContext, (int code, int received, int sent)> CachedGet;
-        private Func<HttpListenerContext, (int code, int received, int sent)> CachedPost;
-        private Func<HttpListenerContext, (int code, int received, int sent)> CachedPut;
+            if (info.Code is 500)
+            {
+                FailedRequests++;
+            }
+            else
+            {
+                SuccessfulRequests++;
+            }
+        }
     }
 }

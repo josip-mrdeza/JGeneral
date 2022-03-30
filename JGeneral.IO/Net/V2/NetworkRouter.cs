@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JGeneral.IO.Logging;
 using JGeneral.IO.Net.V2.Services;
+using JGeneral.IO.Net.V2.Services.Helpers;
 
 namespace JGeneral.IO.Net.V2
 {
@@ -62,7 +63,8 @@ namespace JGeneral.IO.Net.V2
                 String UriSegment = null;
                 try
                 {
-                    UriSegment = context.GetUriSegments().FirstOrDefault();
+                    var segments = context.GetUriSegments();
+                    UriSegment = segments[0];
                     if (UriSegment == "favicon.ico")
                     {
                         File.ReadAllBytes(@"C:\Users\Jzf\Downloads\goat.ico").WriteAllToOutput(context);
@@ -70,13 +72,32 @@ namespace JGeneral.IO.Net.V2
                         return;
                     }
                     var service = Services[UriSegment];
-                    context.Response.StatusCode = (context.Request.HttpMethod switch
+                    var contextInfo = new ContextInfo();
+                    switch (context.Request.HttpMethod)
                     {
-                        "GET"  => service._Get(context),
-                        "POST" => service._Post(context),
-                        "PUT"  => service._Put(context),
-                        _      => (code: 403, received: 0, sent: 0)
-                    }).code;
+                        case "GET":
+                        {
+                            service._Get(context, segments, ref contextInfo);
+                            break;
+                        }
+                        case "POST":
+                        {
+                            service._Get(context, segments, ref contextInfo);
+                            break;
+                        }         
+                        case "PUT":
+                        {
+                            service._Get(context, segments, ref contextInfo);
+                            break;
+                        }
+                        default:
+                        {
+                            contextInfo.Code = 503;
+                            break;
+                        }
+                    }
+
+                    context.Response.StatusCode = contextInfo.Code;
                     context.Response.Close();
                 }
                 catch (KeyNotFoundException keyNotFoundException)

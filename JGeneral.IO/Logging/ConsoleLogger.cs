@@ -119,13 +119,7 @@ namespace JGeneral.IO.Logging
             builder.Append(method);
             builder.Append('\'');
             builder.Append('\n');
-            builder.Append($"            -> Probable cause of the issue: [] - [Value]{cause}");
-            builder.Append('[');
-            builder.Append(cause?.GetType().Name ?? "UnknownType");
-            builder.Append(']');
-            builder.Append(" - [Value](");
-            builder.Append(cause);
-            builder.Append(')');
+            builder.Append($"            -> Stored value: '{cause}'.");
             Console.ForegroundColor = ConsoleColor.DarkRed;
             
             builder.Append('\n');

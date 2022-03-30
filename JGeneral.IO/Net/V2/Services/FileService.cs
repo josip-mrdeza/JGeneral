@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using JGeneral.IO.Net.V2.Services.Helpers;
 
 namespace JGeneral.IO.Net.V2.Services
 {
@@ -14,52 +15,43 @@ namespace JGeneral.IO.Net.V2.Services
             Id = "ftp";
         }
 
-        protected override (int code, int received, int sent) Get(HttpListenerContext httpListenerContext)
+        protected override void Get(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            int code = 0;
-            int received = 0;
-            int sent = 0;
             try
             {
-                var data = File.ReadAllBytes(httpListenerContext.GetUriSegments()[1]);
+                var data = File.ReadAllBytes(resources[1]);
                 data.WriteAllToOutput(httpListenerContext);
-                received = (int)httpListenerContext.Request.ContentLength64;
-                sent = data.Length;
-                code = 200;
+                info.Received = (int)httpListenerContext.Request.ContentLength64;
+                info.Sent = data.Length;
+                info.Code = 200;
             }
             catch (Exception e)
             {
-                code = 500;
+                info.Code = 500;
                 Logger.Log(e, nameof(FileService), nameof(Get));
                 LatestException = e;
             }
-            
-            return (code, received, sent);
         }
 
-        protected override (int code, int received, int sent) Post(HttpListenerContext httpListenerContext)
+        protected override void Post(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            int code = 0;
-            int received = 0;
-            int sent = 0;
             try
             {
                 var data = httpListenerContext.ReadAllInput();
-                received = data.Length;
-                var filename = httpListenerContext.GetUriSegments()[1];
+                info.Received = data.Length;
+                var filename = resources[1];
                 File.WriteAllBytes(filename, data);
                 data = Encoding.UTF8.GetBytes($"Successfully created/updated file \"{filename}\"!");
                 data.WriteAllToOutput(httpListenerContext);
-                sent = data.Length;
-                code = 201;
+                info.Sent = data.Length;
+                info.Code = 201;
             }
             catch (Exception e)
             {
-                code = 500;
+                info.Code = 500;
                 Logger.Log(e, nameof(FileService), nameof(Post));
                 LatestException = e;
             }
-            return (code, received, sent);
         }
     }
 }

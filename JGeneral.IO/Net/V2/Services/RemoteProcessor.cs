@@ -5,6 +5,7 @@ using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using JGeneral.IO.Database;
+using JGeneral.IO.Net.V2.Services.Helpers;
 
 namespace JGeneral.IO.Net.V2.Services
 {
@@ -15,28 +16,24 @@ namespace JGeneral.IO.Net.V2.Services
             Id = "rp";
         }
 
-        protected override (int code, int received, int sent) Post(HttpListenerContext httpListenerContext)
+        protected override void Post(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)
         {
-            int code = 0;
-            int received = 0;
-            int sent = 0;
             object o = null;
             try
             {
-                code = 200;
+                info.Code = 200;
             }
             catch (NullReferenceException nre)
             {
-                sent += nre.Message.WriteStringToOutput(httpListenerContext);
-                sent += ("Possible object source of error -> " + nre.Source).WriteStringToOutput(httpListenerContext);
-                code = 500;
+                info.Sent += nre.Message.WriteStringToOutput(httpListenerContext);
+                info.Sent += ("Possible object source of error -> " + nre.Source).WriteStringToOutput(httpListenerContext);
+                info.Code = 500;
             }
             catch (Exception e)
             {
-                sent += e.Message.WriteStringToOutput(httpListenerContext);
-                code = 500;
+                info.Sent += e.Message.WriteStringToOutput(httpListenerContext);
+                info.Code = 500;
             }
-            return (code, received, sent);
         }
 
         private readonly IFormatter BinaryFormatter = new BinaryFormatter();
