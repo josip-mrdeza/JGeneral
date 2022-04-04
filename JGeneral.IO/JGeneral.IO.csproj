@@ -15,7 +15,7 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>JGeneral.IO</RootNamespace>
         <AssemblyName>JGeneral.IO</AssemblyName>
-        <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -39,6 +39,7 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <DocumentationFile>bin\Release\JGeneral.IO.xml</DocumentationFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Microsoft.CSharp" />
@@ -74,6 +75,9 @@
         <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
           <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
           <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net471\lib\System.Net.Http.dll</HintPath>
         </Reference>
         <Reference Include="System.Numerics" />
         <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -137,6 +141,9 @@
         <Compile Include="Net\NetExceptions\MissingConveyors.cs" />
         <Compile Include="Net\NetworkUser.cs" />
         <Compile Include="Net\RemoteFactory.cs" />
+        <Compile Include="Net\Tcp\ContextExtensions.cs" />
+        <Compile Include="Net\Tcp\TcpContext.cs" />
+        <Compile Include="Net\Tcp\TcpRouter.cs" />
         <Compile Include="Net\V2\NetworkBuilder.cs" />
         <Compile Include="Net\V2\NetworkExtensions.cs" />
         <Compile Include="Net\V2\NetworkRouter.cs" />
@@ -149,6 +156,7 @@
         <Compile Include="Net\V2\Services\NetworkService.cs" />
         <Compile Include="Net\V2\Services\RemoteProcessor.cs" />
         <Compile Include="Net\V2\Services\ReporterService.cs" />
+        <Compile Include="Net\V2\Services\ServiceLogger.cs" />
         <Compile Include="Net\V2\Services\ShortException.cs" />
         <Compile Include="ProcessModifiers.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
@@ -157,12 +165,16 @@
         <Compile Include="Reflection\Events\StaticEventModifier.cs" />
         <Compile Include="Reflection\Methods\Executor.cs" />
         <Compile Include="Reflection\Methods\StaticExecutor.cs" />
+        <Compile Include="Reflection\V2\FieldModifier.cs" />
+        <Compile Include="Reflection\V2\PropertyModifier.cs" />
         <Compile Include="Reflection\Variables\IModifier.cs" />
         <Compile Include="Reflection\Variables\Modifier.cs" />
         <Compile Include="Reflection\Variables\ModifierHelper.cs" />
         <Compile Include="Reflection\Variables\StaticModifier.cs" />
         <Compile Include="ScreenPoint.cs" />
         <Compile Include="Startup.cs" />
+        <Compile Include="Threading\Message.cs" />
+        <Compile Include="Threading\SyncThread.cs" />
         <Compile Include="Unity\Embed.cs" />
         <Compile Include="Unity\UnityProcess.cs" />
         <Compile Include="Updates\AppVersion.cs" />

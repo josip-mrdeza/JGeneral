@@ -118,8 +118,6 @@ namespace JGeneral.IO.Logging
             builder.Append('\'');
             builder.Append(method);
             builder.Append('\'');
-            builder.Append('\n');
-            builder.Append($"            -> Stored value: '{cause}'.");
             Console.ForegroundColor = ConsoleColor.DarkRed;
             
             builder.Append('\n');

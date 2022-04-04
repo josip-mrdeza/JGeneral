@@ -30,11 +30,11 @@ namespace JGeneral.Conveyors.Wrappers
             }
         }
 
-        public static void BroadcastHttp(string obj)
+        public static void BroadcastHttp(string obj, string addr = "http://localhost:1407/")
         {
             try
             {
-                _client.UploadString("http://localhost:1407/", obj);
+                _client.UploadString(addr, obj);
             }
             catch
             {
@@ -54,7 +54,7 @@ namespace JGeneral.Conveyors.Wrappers
         /// <returns></returns>
         public static List<string> ListAllJPipes()
         {
-            return Directory.GetFiles(@"\\.\pipe\").Where(x => x.Contains("joki_")).ToList();
+            return Directory.GetFiles(@"\\.\pipe\").Where(x => x.StartsWith("joki_")).ToList();
         }
     }
 }

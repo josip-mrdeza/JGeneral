@@ -13,7 +13,7 @@ namespace JGeneral.IO.Net.V2.Services
         public ManagerService()
         {
             Id = "manager";
-            NetworkServices = NetworkRouter.Instance.Services;
+            NetworkServices = RouterReference.Services;
         }
 
         protected override void Get(HttpListenerContext httpListenerContext, string[] resources, ref ContextInfo info)

@@ -18,7 +18,8 @@ namespace JGeneral.IO.Net.V2.Services
         public long FailedRequests;
         public bool IsOnline;   
         public ShortException LatestException;
-        private protected ConsoleLogger Logger = NetworkRouter.Logger;
+        protected ConsoleLogger Logger = NetworkRouter.Logger;
+        protected NetworkRouter RouterReference = NetworkRouter.Instance;
 
         public NetworkService()
         {
@@ -74,36 +75,44 @@ namespace JGeneral.IO.Net.V2.Services
                     case HandlerMethod.Get:
                     {
                         Get(context, resources, ref info);
+
                         break;
                     }
                     case HandlerMethod.Post:
                     {
                         Post(context, resources, ref info);
+
                         break;
                     }
                     case HandlerMethod.Put:
                     {
                         Put(context, resources, ref info);
+
                         break;
                     }
                     case HandlerMethod.Delete:
                     {
                         info.Code = 503;
+
                         break;
                     }
                     default:
                     {
                         info.Code = 503;
+
                         break;
                     }
                 }
-
-                IncrementInfos(info);
             }
-            catch
+            catch (Exception exception)
             {
+                Logger.Log(exception, this.GetType().Name, method.ToString());
                 FailedRequests++;
                 info.Code = 500;
+            }
+            finally
+            {
+                IncrementInfos(info);
             }
         }
 

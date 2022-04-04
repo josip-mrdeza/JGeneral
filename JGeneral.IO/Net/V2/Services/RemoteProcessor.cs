@@ -33,6 +33,7 @@ namespace JGeneral.IO.Net.V2.Services
             {
                 info.Sent += e.Message.WriteStringToOutput(httpListenerContext);
                 info.Code = 500;
+                Logger.Log(e);
             }
         }
 
