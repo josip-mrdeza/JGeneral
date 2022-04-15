@@ -1,38 +1,70 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
 using JGeneral.IO.Logging;
-using JGeneral.IO.Reflection.V2;
 
 namespace JGeneral.IO.Threading
 {
     public class SyncThread<TAction> where TAction : MulticastDelegate
     {
         public readonly string Id;
-        private readonly BlockingCollection<Message<TAction>> Collection;
+
+        public SyncThreadState State
+        {
+            get;
+            private set;
+        }
         private readonly Thread thread;
         private readonly ConsoleLogger _logger;
         private readonly string ReferenceObjectId;
         private bool IsCompleted;
-        public SyncThread(string id)
+        private readonly BlockingCollection<Message<TAction>> Collection;
+        private BlockingCollection<Message<TAction>> collection
         {
-            Id = id;
-            Collection = new BlockingCollection<Message<TAction>>();
-            _logger = new ConsoleLogger();
-            thread = new Thread(() => ProcessInfo());
-            thread.IsBackground = true;
-            thread.Start();
+            get
+            {
+                lock (Id)
+                {
+                    return Collection;
+                }
+            }
+        }
+        internal SyncThread(string id)
+        {
+            try
+            {
+                Collection = new BlockingCollection<Message<TAction>>();
+                _logger = new ConsoleLogger();
+                thread = new Thread(() => ProcessInfo());
+                thread.IsBackground = true;
+                thread.Start();
+                Id = id ?? thread.Name;
+                SetIdle();
+            }
+            catch (Exception e)
+            {
+                SetError();
+                _logger.Log(e, nameof(SyncThread<TAction>), "Constructor_0");
+            }
         }
 
-        public SyncThread(string id, ConsoleLogger logger)
+        internal SyncThread(string id, ConsoleLogger logger)
         {
-            Id = id;
-            Collection = new BlockingCollection<Message<TAction>>();
-            _logger = logger;
-            thread = new Thread(() => ProcessInfo());
-            thread.IsBackground = true;
-            thread.Start();
+            try
+            {
+                Collection = new BlockingCollection<Message<TAction>>();
+                _logger = logger ?? new ConsoleLogger();
+                thread = new Thread(() => ProcessInfo());
+                thread.IsBackground = true;
+                thread.Start();
+                Id = id ?? thread.Name;
+                SetIdle();
+            }
+            catch (Exception e)
+            {
+                SetError();
+                _logger.Log(e, nameof(SyncThread<TAction>), "Constructor_1");
+            }
         }
 
         private void ProcessInfo()
@@ -41,24 +73,62 @@ namespace JGeneral.IO.Threading
             {
                 try
                 {
+                    SetIdle();
                     var message = Collection.Take();
+                    SetWorking();
                     OnTake?.Invoke(Id);
                     message.Execute();
                 }
                 catch (Exception e)
                 {
+                    SetError();
                     _logger.Log(e.InnerException ?? e, nameof(SyncThread<TAction>), nameof(ProcessInfo));
                     OnExceptionOccured?.Invoke(Id, e);
                 }
             } 
         }
 
-        public void TryExecuteItem(Message<TAction> item)
+        public void TryExecuteItemWait(Message<TAction> item)
         {
             Collection.Add(item);
             item.Wait();
         }
         
+        public void TryExecuteItem(Message<TAction> item)
+        {
+            Collection.Add(item);
+        }
+
+        public void TryExecuteItemWait(TAction item)
+        {
+            Message<TAction> message = item;
+            Collection.Add(message);
+            message.Wait();
+        }
+        
+        public void TryExecuteItem(TAction item)
+        {
+            Collection.Add(item);
+        }
+        
+        private void SetWorking()
+        {
+            State = SyncThreadState.Working;
+        }
+        private void SetIdle()
+        {
+            State = SyncThreadState.Idle;
+        }
+        private void SetOffline()
+        {
+            State = SyncThreadState.Offline;
+        }
+
+        private void SetError()
+        {
+            State = SyncThreadState.Threw;
+        }
+
         /// <summary>
         /// Represents an event that is called whenever a <see cref="SyncThread{TAction}"/> takes an item from the <see cref="BlockingCollection{T}"/>.
         /// The input string parameter represents the calling thread's id.
