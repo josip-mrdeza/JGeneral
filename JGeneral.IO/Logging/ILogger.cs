@@ -19,6 +19,8 @@ namespace JGeneral.IO.Logging
             Deleted,
             Modified
         }
-        public void Log(in object o, ILogger.LogType type = ILogger.LogType.Debug, ConsoleColor infoColor = ConsoleColor.DarkGreen);
+
+        public void Log(in object o, ILogger.LogType type = ILogger.LogType.Debug,
+            ConsoleColor infoColor = ConsoleColor.DarkGreen, bool reporterLog = false);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Runtime.Remoting.Contexts;
 using System.Threading;
 using JGeneral.IO.Logging;
 
@@ -7,63 +8,40 @@ namespace JGeneral.IO.Threading
 {
     public class SyncThread<TAction> where TAction : MulticastDelegate
     {
-        public readonly string Id;
-
+        public static readonly Context MainContext = Context.DefaultContext;
+        public static event Action<object> OnCompleteMainThreadTask;
+        private readonly Thread thread;
+        private readonly string Id;
+        private readonly ConsoleLogger _logger;
+        private readonly string ReferenceObjectId;
+        private readonly BlockingCollection<Message<TAction>> _collection;
+        private bool IsCompleted;
         public SyncThreadState State
         {
             get;
             private set;
         }
-        private readonly Thread thread;
-        private readonly ConsoleLogger _logger;
-        private readonly string ReferenceObjectId;
-        private bool IsCompleted;
-        private readonly BlockingCollection<Message<TAction>> Collection;
-        private BlockingCollection<Message<TAction>> collection
-        {
-            get
-            {
-                lock (Id)
-                {
-                    return Collection;
-                }
-            }
-        }
-        internal SyncThread(string id)
+
+        public SyncThread(Action threadStart = null)
         {
             try
             {
-                Collection = new BlockingCollection<Message<TAction>>();
+                _collection = new BlockingCollection<Message<TAction>>();
                 _logger = new ConsoleLogger();
-                thread = new Thread(() => ProcessInfo());
+                thread = new Thread(() =>
+                {
+                    threadStart?.DynamicInvoke();
+                    ProcessInfo();
+                });
                 thread.IsBackground = true;
                 thread.Start();
-                Id = id ?? thread.Name;
+                Id = MainContext.ContextID + '_' + thread.Name;
                 SetIdle();
             }
             catch (Exception e)
             {
                 SetError();
                 _logger.Log(e, nameof(SyncThread<TAction>), "Constructor_0");
-            }
-        }
-
-        internal SyncThread(string id, ConsoleLogger logger)
-        {
-            try
-            {
-                Collection = new BlockingCollection<Message<TAction>>();
-                _logger = logger ?? new ConsoleLogger();
-                thread = new Thread(() => ProcessInfo());
-                thread.IsBackground = true;
-                thread.Start();
-                Id = id ?? thread.Name;
-                SetIdle();
-            }
-            catch (Exception e)
-            {
-                SetError();
-                _logger.Log(e, nameof(SyncThread<TAction>), "Constructor_1");
             }
         }
 
@@ -74,7 +52,7 @@ namespace JGeneral.IO.Threading
                 try
                 {
                     SetIdle();
-                    var message = Collection.Take();
+                    var message = _collection.Take();
                     SetWorking();
                     OnTake?.Invoke(Id);
                     message.Execute();
@@ -83,34 +61,24 @@ namespace JGeneral.IO.Threading
                 {
                     SetError();
                     _logger.Log(e.InnerException ?? e, nameof(SyncThread<TAction>), nameof(ProcessInfo));
-                    OnExceptionOccured?.Invoke(Id, e);
                 }
             } 
         }
+        public void TryExecuteItem(Message<TAction> item, SyncThreadMode threadMode = SyncThreadMode.Current, bool waitTilComplete = false)
+        {
+            item.ThreadMode = threadMode;
+            _collection.Add(item);
 
-        public void TryExecuteItemWait(Message<TAction> item)
-        {
-            Collection.Add(item);
-            item.Wait();
+            if (waitTilComplete)
+            {
+                item.Wait();
+            }
         }
-        
-        public void TryExecuteItem(Message<TAction> item)
+        public void TryExecuteItem(TAction item, SyncThreadMode threadMode = SyncThreadMode.Current, bool waitTilComplete = false)
         {
-            Collection.Add(item);
+            TryExecuteItem((Message<TAction>) item, threadMode, waitTilComplete);
         }
 
-        public void TryExecuteItemWait(TAction item)
-        {
-            Message<TAction> message = item;
-            Collection.Add(message);
-            message.Wait();
-        }
-        
-        public void TryExecuteItem(TAction item)
-        {
-            Collection.Add(item);
-        }
-        
         private void SetWorking()
         {
             State = SyncThreadState.Working;
@@ -134,10 +102,5 @@ namespace JGeneral.IO.Threading
         /// The input string parameter represents the calling thread's id.
         /// </summary>
         public static event Action<string> OnTake;
-        /// <summary>
-        /// Represents an event that is called whenever a <see cref="SyncThread{TAction}"/> throws an exception in it's processing method '<see cref="ProcessInfo"/>'.
-        /// The input string parameter represents the calling thread's id.
-        /// </summary>
-        public static event Action<string, Exception> OnExceptionOccured;
     }
 }

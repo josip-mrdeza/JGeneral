@@ -23,7 +23,7 @@ namespace JGeneral.IO.Logging
             Reporter._logger = this;
         }
         
-        public void Log(in object o, ILogger.LogType type = ILogger.LogType.Info, ConsoleColor infoColor = default)
+        public void Log(in object o, ILogger.LogType type = ILogger.LogType.Info, ConsoleColor infoColor = default, bool remoteLog = false)
         {
             StringBuilder builder = new StringBuilder();
             
@@ -97,7 +97,10 @@ namespace JGeneral.IO.Logging
                 Console.WriteLine(ss[i]);
             }
             Console.ForegroundColor = DefaultConsoleColor;
-            Reporter.Report(str);
+            if (remoteLog)
+            {
+                Reporter.Report(str);
+            }
             builder.Clear();
         }
         public void Log(Exception caughtException, string type = "N/A", string method = "N/A", object cause = null, bool remoteLog = false)

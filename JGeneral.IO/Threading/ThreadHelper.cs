@@ -26,7 +26,7 @@ namespace JGeneral.IO.Threading
 
         public static SyncThread<TAction> CreateSyncDaemon<TAction>(TAction function) where TAction : MulticastDelegate
         {
-            return new SyncThread<TAction>(null, Logger);
+            return new SyncThread<TAction>();
         }
         
     }

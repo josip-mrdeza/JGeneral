@@ -1,11 +1,11 @@
 using System.Runtime.InteropServices;
-using PInvoke;
+//using PInvoke;
 
 namespace JGeneral.IO
 {
     public static class Mouse
     {
-        public static ScreenPoint GetPosition()
+        /*public static ScreenPoint GetPosition()
         {
             GetCursorPos(out POINT point);
 
@@ -20,6 +20,6 @@ namespace JGeneral.IO
         }
         
         [DllImport("user32.dll")]
-        private static extern bool GetCursorPos(out POINT lpPoint);
+        private static extern bool GetCursorPos(out POINT lpPoint);*/
     }
 }

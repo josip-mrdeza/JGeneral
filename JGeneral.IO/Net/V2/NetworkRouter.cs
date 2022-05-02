@@ -87,13 +87,13 @@ namespace JGeneral.IO.Net.V2
                         }
                         case "POST":
                         {
-                            service._Get(context, Segments, ref contextInfo);
+                            service._Post(context, Segments, ref contextInfo);
 
                             break;
                         }
                         case "PUT":
                         {
-                            service._Get(context, Segments, ref contextInfo);
+                            service._Put(context, Segments, ref contextInfo);
 
                             break;
                         }

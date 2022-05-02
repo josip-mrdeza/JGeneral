@@ -9,16 +9,18 @@ namespace JGeneral.IO
 {
     public static class Compiler
     {
-        public static string Compile(string dir, string dll, bool exe = false)
+        public static string Compile(string sourceDirectoryPath, string dependencyDirectoryPath, string libraryName, string outputDirectory = null, bool isExe = false)
         {
             CSharpCodeProvider codeProvider = new CSharpCodeProvider();
             ICodeCompiler icc = codeProvider.CreateCompiler();
-            var files = Directory.GetFiles(dir);
+            var files = Directory.GetFiles(sourceDirectoryPath);
             CompilerParameters parameters = new CompilerParameters();
-            parameters.GenerateExecutable = exe;
-            parameters.OutputAssembly = dll;
-            parameters.ReferencedAssemblies.AddRange(files.Where(x => x.EndsWith(".dll")).ToArray());
+            parameters.GenerateInMemory = false;
+            parameters.GenerateExecutable = isExe;
+            parameters.OutputAssembly = libraryName;
+            parameters.ReferencedAssemblies.AddRange(Directory.GetFiles(dependencyDirectoryPath).Where(x => x.EndsWith(".dll")).ToArray());
             CompilerResults results = icc.CompileAssemblyFromFileBatch(parameters, files);
+
             return results.PathToAssembly;
         }
 
