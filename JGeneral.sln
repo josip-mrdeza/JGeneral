@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.Mods", "JGeneral.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.IO.Interop", "JGeneral.IO.Interop\JGeneral.IO.Interop.csproj", "{836D8A60-0A7E-4829-ACFB-6EE3F419F009}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JGeneral.IO.Strings", "JGeneral.IO.Strings\JGeneral.IO.Strings.csproj", "{ACD0A808-AF4A-4E64-9DB3-3B9DEC446613}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{836D8A60-0A7E-4829-ACFB-6EE3F419F009}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836D8A60-0A7E-4829-ACFB-6EE3F419F009}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{836D8A60-0A7E-4829-ACFB-6EE3F419F009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACD0A808-AF4A-4E64-9DB3-3B9DEC446613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACD0A808-AF4A-4E64-9DB3-3B9DEC446613}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACD0A808-AF4A-4E64-9DB3-3B9DEC446613}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD0A808-AF4A-4E64-9DB3-3B9DEC446613}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -23,6 +23,7 @@ namespace JGeneral.IO.Reflection
             {
                 _info = piT.GetField(variableId, flags) as TVariableInfo;
                 cfg = 0;
+                
                 if (_info is null)
                 {
                     throw new Exception("VSD is null, have you misspelled the name of the field, or is the field non-public?");
@@ -34,11 +35,17 @@ namespace JGeneral.IO.Reflection
             else
             {
                 _info = piT.GetProperty(variableId, flags) as TVariableInfo;
-                cfg = 1;
-                if (!(_info as PropertyInfo)!.CanWrite)
+                cfg = 1;   
+                
+                if (_info is null)
                 {
-                    throw new Exception("Cannot instantiate class 'Modifier' on a get-only property.");
+                    throw new Exception("VSD is null, have you misspelled the name of the field, or is the field non-public?");
                 }
+                
+                // if (!(_info as PropertyInfo)!.CanWrite)
+                // {
+                //     throw new Exception("Cannot instantiate class 'Modifier' on a get-only property.");
+                // }
                 
                 Modify_Cached = o => (_info as PropertyInfo)!.SetValue(Parent, o);
                 Get_Cached = () => (TVariableInfoData)(_info as PropertyInfo)!.GetValue(Parent);

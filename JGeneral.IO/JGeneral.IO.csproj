@@ -75,7 +75,12 @@
         <Compile Include="KeepMeAlive.cs" />
         <Compile Include="Logging\ConsoleLogger.cs" />
         <Compile Include="Logging\ILogger.cs" />
+        <Compile Include="Logging\FieldMiddleMan.cs" />
+        <Compile Include="Logging\MiddleMan.cs" />
+        <Compile Include="Logging\MiddleManHelper.cs" />
+        <Compile Include="Logging\PropertyMiddleMan.cs" />
         <Compile Include="Logging\Reporter.cs" />
+        <Compile Include="Memory\MemoryHelper.cs" />
         <Compile Include="Mouse.cs" />
         <Compile Include="Net\BasicRemoteClient.cs" />
         <Compile Include="Net\BasicRemoteDataSender.cs" />

@@ -7,7 +7,8 @@ namespace JGeneral.Mods.ONI
         public string Title { get; }
         public string Description { get;}
         public string StaticID { get;}
-        public ModInfo Info { get; set; }
+        public ModInfo Info { get; }
+        public ModType Type { get; }
 
         public void WriteInfos(string directory);
         public void WriteInfoYaml(string modInfoPath, string modInfoYaml);
@@ -16,6 +17,8 @@ namespace JGeneral.Mods.ONI
         public string BuildInfoYaml(StringBuilder builder);
         public string BuildYamlPath(string directory, StringBuilder builder);
         public string BuildYaml(StringBuilder builder);
+        public void Build(string outputDirectory);
+        public void BuildSource(string outputDirectory);
     }
     
 }

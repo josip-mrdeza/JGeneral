@@ -1,0 +1,29 @@
+namespace JGeneral.Mods.ONI
+{
+    public enum TechDlc
+    {
+        SpaceCombustion,
+        SpaceGas,
+        AdvancedSanitation,
+        Bioengineering,
+        CrashPlan,
+        CryoFuelPropulsion,
+        DurableLifeSupport,
+        GasDistribution,
+        HighVelocityDestruction,
+        HighVelocityTransport,
+        HydrocarbonPropulsion,
+        BetterHydroCarbonPropulsion,
+        LiquidDistribution,
+        NuclearResearch,
+        AdvancedNuclearResearch,
+        HighPressureForging,
+        NuclearStorage,
+        NuclearPropulsion,
+        RadiationProtection,
+        NuclearRefinement,
+        AdvancedScanners,
+        SpacePower,
+        SpaceProgram
+    }
+}

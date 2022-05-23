@@ -7,7 +7,7 @@ namespace JGeneral.Mods.ONI
         internal string Version { get; set; }
         internal byte APIVersion { get; set; }
 
-        internal ModInfo(SupportedContent supportedContent, SupportedBuild minimumSupportedBuild, string version, APIVersion apiVersion)
+        public ModInfo(SupportedContent supportedContent, SupportedBuild minimumSupportedBuild, string version, APIVersion apiVersion)
         {
             Supported = supportedContent.ToUniqueId();
             MinimumSupportedBuild = ((ulong)minimumSupportedBuild).ToString();
